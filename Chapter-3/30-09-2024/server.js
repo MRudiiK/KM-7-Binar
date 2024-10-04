@@ -93,26 +93,41 @@ app.get("/api/v1/cars/:id", (req, res) => {
   });
 });
 
-app.patch("api/v1/cars/:id", (req, res) => {
-  const id = req.params.id;
-  // UPDATE ... FROM (table) WHERE id=req.params.id
-  console.log(req, body);
+app.patch("/api/v1/cars/:id", (req, res) => {
+  console.log("PATCH request received"); 
+  const id = req.params.id ; // Convert id to number
   const { name, year, type } = req.body;
-  const car = cars.find((i) => i.id === id);
-  console.log(car);
-  const carIndex = cars.findIndex((car) => car.id === id);
-  console.log(carIndex);
 
-  // spread operator
+  const car = cars.find((i) => i.id === id);
+  if (!car) {
+    return res.status(404).json({
+      status: "Failed",
+      message: "Car not found!",
+      isSuccess: false,
+    });
+  }
+
+  const carIndex = cars.findIndex((car) => car.id === id);
+
+  // Update the car data using the spread operator
   cars[carIndex] = { ...cars[carIndex], ...req.body };
 
   fs.writeFile(
     `${__dirname}/assets/data/cars.json`,
-    JSON.stringify(cars),
+    JSON.stringify(cars, null, 2), // Pretty print JSON
     (err) => {
-      res.status(201).json({
+      if (err) {
+        console.error("Error writing file:", err); // Log the error
+        return res.status(500).json({
+          status: "Error",
+          message: "Failed to save car data!",
+          isSuccess: false,
+        });
+      }
+  
+      res.status(200).json({
         status: "Success",
-        message: "Success add new car data",
+        message: "Car data updated successfully!",
         isSuccess: true,
         data: {
           car: cars[carIndex],
@@ -120,12 +135,61 @@ app.patch("api/v1/cars/:id", (req, res) => {
       });
     }
   );
-
-  res.status(404).json({
-    status: "Failed",
-    message: "API not exist !!!",
-  });
+  
 });
+
+app.put("api/v1/cars/:id", (req, res) => {
+  const id = req.params.id * 1; // Convert id to number
+  const { name, year, type } = req.body;
+
+  const car = cars.find((i) => i.id === id);
+  if (!car) {
+    return res.status(404).json({
+      status: "Failed",
+      message: "Car not found!",
+      isSuccess: false,
+    });
+  }
+
+  // Ensure that all fields are present
+  if (!name || !year || !type) {
+    return res.status(400).json({
+      status: "Failed",
+      message: "Missing required fields!",
+      isSuccess: false,
+    });
+  }
+
+  // Replace the entire car with the new data
+  const updatedCar = { id, name, year, type };
+  const carIndex = cars.findIndex((car) => car.id === id);
+  cars[carIndex] = updatedCar;
+
+  fs.writeFile(
+    `${__dirname}/assets/data/cars.json`,
+    JSON.stringify(cars, null, 2),
+    (err) => {
+      if (err) {
+        return res.status(500).json({
+          status: "Error",
+          message: "Failed to save car data!",
+          isSuccess: false,
+        });
+      }
+
+      res.status(200).json({
+        status: "Success",
+        message: "Car data replaced successfully!",
+        isSuccess: true,
+        data: {
+          car: cars[carIndex],
+        },
+      });
+    }
+  );
+});
+
+
 
 // middleware / handler untuk url yang tidak dapat diakses karena memang tidak ada di aplikasi
 // membuat middleware = our own middleware

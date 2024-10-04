@@ -11,8 +11,8 @@
     "availableAt": "2023-10-01T10:00:00.000Z",
     "transmission": "Automatic",
     "available": true,
-    "type": "Sedan",
-    "year": 2023,
+    "type": "Tyotaaa",
+    "year": 2020,
     "options": [
       "Cruise Control",
       "Leather Seats",
@@ -26,7 +26,8 @@
       "Lane Departure Warning",
       "Blind Spot Monitoring",
       "LED Headlights"
-    ]
+    ],
+    "name": "GTR"
   },
   {
     "id": "2",
@@ -261,10 +262,16 @@
     ]
   },
   {},
-  { "model": "Mber" },
-  { "model": "Roar" },
+  {
+    "model": "Mber"
+  },
+  {
+    "model": "Roar"
+  },
   {},
-  { "id": "100" },
+  {
+    "id": "100"
+  },
   {},
   {},
   {}
